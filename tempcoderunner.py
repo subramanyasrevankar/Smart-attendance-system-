@@ -32,8 +32,49 @@ while True:
 
                     elif cv2.waitKey(1) & 0xFF == ord('q'):
                   break
+                  cap.release()
+                  cv2.destroyAllWindows()
 
-                    
+def recognize_face():
+      cap = cv2.VideoCapture(0)
+      if not cap.isOpened():
+        print("Cannot open webcam")
+        return
+        while True:
+         ret, img = cap.read()
+        if not ret:
+            print("Failed to capture image")
+            break
+             img_small = cv2.cvtColor(cv2.resize(img, (0, 0), fx=0.25, fy=0.25), cv2.COLOR_BGR2RGB)
+                     face_locs = face_recognition.face_locations(img_small)
+                     encodings = face_recognition.face_encodings(img_small, face_locs)
+                             for encoding, loc in zip(encodings, face_locs):
+                                            matches = face_recognition.compare_faces(face_data['encodings'], encoding)
+                                            distances = face_recognition.face_distance(face_data['encodings'], encoding)
+                                                      if True in matches:
+                                                            best_match = distances.argmin()
+                                                            name = face_data['names'][best_match]
+                                                            confidence = round((1 - distances[best_match]) * 100, 2)
+                                                             y1, x2, y2, x1 = [coord * 4 for coord in loc]
+                                                            cv2.rectangle(img, (x1, y1), (x2, y2), (0, 255, 0), 2)
+                                                            cv2.putText(img, f"{name} ({confidence}%)", (x1, y1 - 10),
+                                          cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 255, 0), 2)
+                                          
+
+
+
+
+
+                                                            
+
+
+
+
+
+
+
+
+
 
 
 
