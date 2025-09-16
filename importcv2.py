@@ -59,6 +59,42 @@ def train_svm_model():
         print("SVM model trained and saved")
 
 #capture the face with name
+def capture_face_and_name():
+  cap=cv2.VideoCapture(0)
+  face_data={'features':[],'names':[]}
+  if os.path.exists(face_data_file):
+    with open(face_data_file,'rb') as f:
+      face_data=pickle.load(f)
+      print("Press 's' to save your face")
+   while True:
+     _,img=cap.read()
+     gray=cv2.cvtColor(img,cv2.COLOR_BGR2GRAY)
+     face_cascade = cv2.CascadeClassifier(cv2.data.haarcascades + 'haarcascade_frontalface_default.xml')
+      faces = face_cascade.detectMultiScale(gray, 1.3, 5)
+      for (x,y,w,h) in faces:
+        face_img=img[y:y+h,x:x+w]
+        hog_features=extract_hog_features(face_img)
+        
+        # Ensure all features have the same length
+        if face_data['features']:
+            max_length = max(len(feature) for feature in face_data['features'])
+            hog_features = np.pad(hog_features, (0, max(0, max_length - len(hog_features))), 'constant')
+					name=input('Enter your name')
+					face_data['features'].append(hog_features)
+					face_data['names'].apppend(name)
+					with open(face_data_file.'wb') as f:
+              pickle.dump(face_data,f)
+					print(f"Face data saved for {name}.")
+					cv2.imshow("Capture Face",img) #moved before break
+					break 
+		if cv2.waitKey(1) & 0xFF==ord('s):
+					break
+		cap.release()
+	  cap.destroyAllWindows()
+
+def recognize_face():
+    
+					
 
 
        
