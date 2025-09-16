@@ -44,7 +44,24 @@ def train_svm_model():
        features=data['features']
        names=data['names']
        #Ensure all the features have the same shape 
-        max_length=max(len
+        max_length=max(len(feature) for feature in features)  #calculates all length 
+        padded_features=[np.pad(feature,(0,max_length-len(feature)),'constant')for feature in features]
+        features_array=np.array(padded_features)
+        names_array=np.array(names) #making ir i 2 d array makes it easy (ml)
+        #Encode the labels 
+        label_encoder=LabelEncoder()
+        labels=labels_encoder.fit_transform(names_array)
+       #Train the SVM model
+        svm_model=SVC(kernel='linear',probability=True)  # it allows to calculates the probability  support vector machine which helps to classify the tasks
+        svm_model.fit(features_array,labels)
+        with open(model_file,'wb') as f:
+          pickle.dump((svm_model,label_encoder),f) #Saves both the trained SVM model and the label encoder in a file called hog_svm_face_model.pkl.(later can be called with the name pickle.dump)
+        print("SVM model trained and saved")
+
+#capture the face with name
+
+
+       
   
   
   
