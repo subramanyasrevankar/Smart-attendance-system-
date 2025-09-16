@@ -59,6 +59,19 @@ def recognize_face():
                                                             cv2.rectangle(img, (x1, y1), (x2, y2), (0, 255, 0), 2)
                                                             cv2.putText(img, f"{name} ({confidence}%)", (x1, y1 - 10),
                                           cv2.FONT_HERSHEY_SIMPLEX, 0.75, (0, 255, 0), 2)
+                                                    else:
+                                                         print("Stranger detected")
+                                                            cv2.imshow("Recognize Face", img)
+                                                                    if cv2.waitKey(1) & 0xFF == ord('q'):
+                                                                             break
+                                                            cap.release()
+                                                            cv2.destroyAllWindows()
+                                                            capture_face_and_name()
+                                                             recognize_face()
+
+
+
+
                                           
 
 
