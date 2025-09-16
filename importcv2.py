@@ -91,10 +91,68 @@ def capture_face_and_name():
 					break
 		cap.release()
 	  cap.destroyAllWindows()
-
+   
+   
 def recognize_face():
-    
-					
+    if not os.path.exists(model_file):
+	      print("Model not found.Train it first")
+	     return 
+	with open('model_file','rb')as f"
+     svm_model,label_encoder=pickle_load(f)
+	 cap=cv2.VideoCapture(0)
+      if not cap.isOpened():
+	     print("Cannot open Webcam")
+	     return 
+	  face_cascade=cv2.CascadeClassifier(cv2.data,haarcascades + 'haarcascade_frontalface_default.xml')
+       seen=set()
+	   while True:
+	      ret,frame=cap.read()
+	      if not ret:
+	           break
+		   gray=cv2.cvtColor(frame,cv2.COLOR_BGR2GRAY)
+            faces = face_cascade.detectMultiScale(gray, 1.3, 5)  # 1.3-scale factor (how much image size is reduced at each scale)->5 ->min 5 detections to consider it as a valid face
+			  for (x, y, w, h) in faces:
+            face_img = frame[y:y+h, x:x+w]
+            feat = extract_hog_features(face_img)  # the 1d vector 
+            expected_len = svm_model.support_vectors_.shape[1]  # it is the trained support classifier 
+            if len(feat) != expected_len:
+                feat = np.pad(feat, (0, max(0, expected_len - len(feat))), 'constant')
+            probs = svm_model.predict_proba([feat])[0]  # gives probability for each class
+            idx = np.argmax(probs)  # best guess
+            conf = probs[idx]
+            if conf > 0.6:
+                name = label_encoder.inverse_transform([idx])[0]  # get the name using the inverse transform 
+                cv2.putText(frame, f"{name} {conf:.2f}", (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0,255,0), 2)
+                if name not in seen:
+                    mark_attendance(name)
+                    seen.add(name)
+            else:
+                cv2.putText(frame, "Unknown", (x, y-10), cv2.FONT_HERSHEY_SIMPLEX, 0.8, (0,0,255), 2)
+            cv2.rectangle(frame, (x, y), (x+w, y+h), (255, 0, 0), 2)
+        cv2.imshow("Recognition", frame)
+        if cv2.waitKey(1) & 0xFF == ord('q'):
+            break
+    cap.release()
+    cv2.destroyAllWindows()
+
+while True:
+ print("\n Choose an option")
+ print("1.Register a new Face")
+ print("2.Train SVM model')
+ print('3.Recognize and mark attendance")
+ print('4.Exit ')
+
+ if choice == '1':
+        capture_face_and_name()
+    elif choice == '2':
+        train_svm_model()
+    elif choice == '3':
+        recognize_face()
+    elif choice == '4':
+        print('Exiting the program')
+        break
+    else:
+        print('Invalid choice enter again:')
 
 
        
