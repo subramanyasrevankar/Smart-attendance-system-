@@ -23,7 +23,28 @@ def mark_attendance(name):
   wb.openpyxl.load_workbook(attendance_file)
   ws=wb.active
   now=datetime.now()
-  date_str=now.strftime(
+  date_str=now.strftime("%Y-%m-%d")
+  time_str=now.strftime("%H:%M:%S")
+  ws.append([name,date_str,time_str,"Present"])
+  wb.save(attendance_file)
+
+#Extract the  HOG features (Histogram Oriented Gradients)->think it is like a shape detector
+def extract_hog_features(image):
+  gray=cv2.cvtColor(image,cv2.COLOR_BGR2GRAY)
+  hog=cv2.HOGDescriptor()
+  hog_features=hog.compute(gray) # extract the hog features and compute it in the 1d 
+  return hog_features.flatten() #helps to flatten 
+
+def train_svm_model():
+  if not os.path.exists(face_data_file):
+      print("No face data found.Register Faces first")
+      return 
+    with open(face_data_file,'rb) as f:
+              data =pickle(f) #helps to load the binary file
+       features=data['features']
+       names=data['names']
+       #Ensure all the features have the same shape 
+        max_length=max(len
   
   
   
