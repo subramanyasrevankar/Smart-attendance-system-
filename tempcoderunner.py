@@ -19,6 +19,21 @@ while True:
    cv2.imshow('Capture Face',img)
    if cv2.waitKey(1) & 0xFF==ord('s):
         img_small = cv2.cvtColor(cv2.resize(img, (0, 0), fx=0.25, fy=0.25), cv2.COLOR_BGR2RGB)
-                    encodings = face_recognition.face_encodings(img_small)
+                    encodings = face_recognition.face_encodings(img_small)   #a list of encoding vectors (one per detected face). If no faces found → empty list
+                    if encodings:
+                         name=input("Enter your name")
+                         face_data['encodings'].append(encodings[0])   #Takes the first face encoding found (encodings[0]) and appends it to the 'encodings' list in face_data.
+                         face_data['names'].append(name)
+                        with open(face_data_file, 'wb') as f:
+                         pickle.dump(face_data, f)
+                        print(f"Saved face for {name}")
+                    else:
+                       print("No face detected. Try again.")
+
+                    elif cv2.waitKey(1) & 0xFF == ord('q'):
+                  break
+
                     
+
+
 
